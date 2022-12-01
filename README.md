@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ![image alt text](docs/demo_guide/images/Apollo_logo.png)
 
 [![Build Status](https://travis-ci.com/ApolloAuto/apollo.svg?branch=master)](https://travis-ci.com/ApolloAuto/apollo) [![Simulation Status](https://azure.apollo.auto/dailybuildstatus.svg)](https://azure.apollo.auto/dailybuild)
@@ -282,3 +283,6 @@ Please refer the Disclaimer of Apollo in [Apollo's official website](http://apol
 * Interested in our turnKey solutions or partnering with us Mail us at: apollopartner@baidu.com
 
 
+=======
+# apollo-r3.5.0
+>>>>>>> a2b614413b711534aac25aa0b6e97219e626a43a
