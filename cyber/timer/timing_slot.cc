@@ -26,6 +26,8 @@ void TimingSlot::AddTask(const std::shared_ptr<TimerTask>& task) {
   tasks_.emplace(task->Id(), task);
 }
 
+// 执行slot中到点的任务, 其中 hander_queue 异步执行的任务
+// rep_queue 重复执行的任务
 void TimingSlot::EnumTaskList(
     uint64_t deadline, bool async, BoundedQueue<HandlePackage>* hander_queue,
     BoundedQueue<std::shared_ptr<TimerTask>>* rep_queue) {
@@ -36,28 +38,28 @@ void TimingSlot::EnumTaskList(
     // std::cout << "judge: task->" << task->deadline << " : " << deadline;
     if (task->deadline_ <= deadline) {
       if (task->rest_rounds_ == 0) {
-        if (async) {
+        if (async) {                                       //有异步执行的需要的话就放入异步队列
           HandlePackage hp;
           hp.handle = task->handler_;
           hp.id = task->Id();
           if (!hander_queue->Enqueue(hp)) {
             AERROR << "hander queue is full";
           }
-        } else {
+        } else {                                           //否则直接执行 
           task->Fire(false);
         }
 
-        if (!task->oneshot_) {  // repeat timer,push back
+        if (!task->oneshot_) {  // repeat timer,push back  //需要重复执行的再次添加，同时记录改任务的x周目
           task->fire_count_++;
           rep_queue->Enqueue(task);
         }
-        tasks_.erase(del_it);
+        tasks_.erase(del_it);                              //清理槽中的任务
 
       } else {
         AERROR << "task deadline overflow...";
       }
     } else {  // no expired, -- rounds
-      task->rest_rounds_--;
+      task->rest_rounds_--;                                //本轮还不该你执行，钉子户继续呆着
     }
   }
 }

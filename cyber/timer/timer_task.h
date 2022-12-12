@@ -54,7 +54,7 @@ class TimerTask {
   CallHandler handler_;
   uint64_t rest_rounds_ = 0;
   bool oneshot_ = true;
-  uint64_t fire_count_ = 0;
+  uint64_t fire_count_ = 0; //已经执行过的次数
 
  public:
   uint64_t Id() { return tid_; }

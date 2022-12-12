@@ -98,15 +98,15 @@ void TimingWheel::Step() {
   }
   uint64_t deadline = tick_duration_ * (tick_ + 1);
   uint64_t idx = tick_ & mask_;
-  RemoveCancelledTasks(idx);
-  FillAddSlot();
+  RemoveCancelledTasks(idx);//和idx无关，RemoveCancelledTasks负责把cancelled_list_中所有的定时器清除
+  FillAddSlot();            //把新添加的定时器放入对应的slot中，等待执行
   time_slots_[idx].EnumTaskList(deadline, true, &handler_queue_,
                                 &repeat_queue_);
 
   // timing wheel tick one time
   tick_++;
 
-  FillRepeatSlot();
+  FillRepeatSlot();//重复任务入队列
 
   while (!handler_queue_.Empty()) {
     HandlePackage hp;
@@ -158,13 +158,15 @@ void TimingWheel::FillRepeatSlot() {
   }
 }
 
+// 添加任务到对应的位置上-->128个哈希表, tick1:hash1, tick2:hash2
 void TimingWheel::FillSlot(const std::shared_ptr<TimerTask>& task) {
   task->deadline_ = task->init_time_ +
                     (task->fire_count_ + 1) * (task->interval_) * 1000 * 1000 -
-                    start_time_;
+                    start_time_;                                                                    //在几纳秒后执行
 
-  // Calculate how many tickes have been run since the time wheel start
-  uint64_t t = task->deadline_ / tick_duration_;  // perTick = 1ms
+  // Calculate how many tickes have been run since the time wheel start 多少个tick后该任务能执行
+  uint64_t t = task->deadline_ / tick_duration_;  // perTick = 1ms                                  //在几tick后执行
+  // 和当前tick做比较，128个tick算一轮，几轮之后能执行到你
   if (t < tick_) {
     task->rest_rounds_ = 0;
   } else {
