@@ -55,7 +55,7 @@ class DataDispatcher {
 
 template <typename T>
 inline DataDispatcher<T>::DataDispatcher() {}
-
+//添加派发对象
 template <typename T>
 void DataDispatcher<T>::AddBuffer(const ChannelBuffer<T>& channel_buffer) {
   std::lock_guard<std::mutex> lock(buffers_map_mutex_);
@@ -68,7 +68,7 @@ void DataDispatcher<T>::AddBuffer(const ChannelBuffer<T>& channel_buffer) {
     buffers_map_.Set(channel_buffer.channel_id(), new_buffers);
   }
 }
-
+//派发消息，派发完毕后Notify
 template <typename T>
 bool DataDispatcher<T>::Dispatch(const uint64_t channel_id,
                                  const std::shared_ptr<T>& msg) {

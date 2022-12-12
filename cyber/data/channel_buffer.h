@@ -62,17 +62,17 @@ bool ChannelBuffer<T>::Fetch(uint64_t* index,
     return false;
   }
 
-  if (*index == 0) {
-    *index = buffer_->Tail();
-  } else if (*index == buffer_->Tail() + 1) {
+  if (*index == 0) { //如果还没初始化
+    *index = buffer_->Tail(); //读取最新的cache
+  } else if (*index == buffer_->Tail() + 1) { //现有的cache已经读过了，且还没有新数据到来，
     return false;
-  } else if (*index < buffer_->Head()) {
+  } else if (*index < buffer_->Head()) { //太久没读，要读的已经被cache覆盖了，就读最新的
     auto interval = buffer_->Tail() - *index;
     AWARN << "channel[" << GlobalData::GetChannelById(channel_id_) << "] "
           << "read buffer overflow, drop_message[" << interval << "] pre_index["
           << *index << "] current_index[" << buffer_->Tail() << "] ";
     *index = buffer_->Tail();
-  }
+  }//否则就是还在cache的范围之内，读对应的数据
   m = buffer_->at(*index);
   return true;
 }

@@ -57,7 +57,7 @@ class DataNotifier {
 };
 
 inline DataNotifier::DataNotifier() {}
-
+//给对应的channel添加notifier
 inline void DataNotifier::AddNotifier(
     uint64_t channel_id, const std::shared_ptr<Notifier>& notifier) {
   std::lock_guard<std::mutex> lock(notifies_map_mutex_);
@@ -69,7 +69,7 @@ inline void DataNotifier::AddNotifier(
     notifies_map_.Set(channel_id, new_notify);
   }
 }
-
+//channel_id的消息来了，通知到监听对应channel的notifiers，依次执行notifier的cb
 inline bool DataNotifier::Notify(const uint64_t channel_id) {
   NotifyVector* notifies = nullptr;
   if (notifies_map_.Get(channel_id, &notifies)) {

@@ -170,18 +170,18 @@ class DataVisitor<M0, NullType, NullType, NullType> : public DataVisitorBase {
  public:
   explicit DataVisitor(const VisitorConfig& configs)
       : buffer_(configs.channel_id, new BufferType<M0>(configs.queue_size)) {
-    DataDispatcher<M0>::Instance()->AddBuffer(buffer_);
+    DataDispatcher<M0>::Instance()->AddBuffer(buffer_);        
     data_notifier_->AddNotifier(buffer_.channel_id(), notifier_);
   }
 
   DataVisitor(uint64_t channel_id, uint32_t queue_size)
       : buffer_(channel_id, new BufferType<M0>(queue_size)) {
-    DataDispatcher<M0>::Instance()->AddBuffer(buffer_);
-    data_notifier_->AddNotifier(buffer_.channel_id(), notifier_);
+    DataDispatcher<M0>::Instance()->AddBuffer(buffer_); //数据来了往buffer中写，写完了通知
+    data_notifier_->AddNotifier(buffer_.channel_id(), notifier_); //channel_id 和 notifier_绑定。 收到通知后执行cb
   }
 
-  bool TryFetch(std::shared_ptr<M0>& m0) {  // NOLINT
-    if (buffer_.Fetch(&next_msg_index_, m0)) {
+  bool TryFetch(std::shared_ptr<M0>& m0) {  // NOLINT  //获取cache中的数据
+    if (buffer_.Fetch(&next_msg_index_, m0)) {// 向buffer中取数据
       next_msg_index_++;
       return true;
     }
