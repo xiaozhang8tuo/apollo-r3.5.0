@@ -77,7 +77,7 @@ SchedulerClassic::SchedulerClassic() {
 }
 
 void SchedulerClassic::CreateProcessor() {
-  for (auto& group : classic_conf_.groups()) {
+  for (auto& group : classic_conf_.groups()) {//不同的组可以指定不同的处理器数量 
     auto& group_name = group.name();
     auto proc_num = group.processor_num();
     if (task_pool_size_ == 0) {
@@ -90,27 +90,27 @@ void SchedulerClassic::CreateProcessor() {
     std::vector<int> cpuset;
     ParseCpuset(group.cpuset(), &cpuset);
 
-    ClassicContext::cr_group_[group_name];
+    ClassicContext::cr_group_[group_name]; //创建各种协程/cv/mtx 组 是 和Processor一起的
     ClassicContext::rq_locks_[group_name];
     ClassicContext::mtx_wq_[group_name];
     ClassicContext::cv_wq_[group_name];
 
     for (uint32_t i = 0; i < proc_num; i++) {
-      auto ctx = std::make_shared<ClassicContext>();
+      auto ctx = std::make_shared<ClassicContext>();//
       ctx->SetGroupName(group_name);
       pctxs_.emplace_back(ctx);
 
-      auto proc = std::make_shared<Processor>();
+      auto proc = std::make_shared<Processor>();// 组内 Processor 和 ClassicContext 的数量是一致的,创建时绑定
       proc->BindContext(ctx);
       proc->SetAffinity(cpuset, affinity, i);
-      proc->SetSchedPolicy(processor_policy, processor_prio);
+      proc->SetSchedPolicy(processor_policy, processor_prio);//级别低的 Processor(线程)，可能一直不被执行
       processors_.emplace_back(proc);
     }
   }
 }
 
 bool SchedulerClassic::DispatchTask(const std::shared_ptr<CRoutine>& cr) {
-  // we use multi-key mutex to prevent race condition
+  // we use multi-key mutex to prevent race condition 多个锁来防止数据竞争
   // when del && add cr with same crid
   if (likely(id_cr_wl_.find(cr->id()) == id_cr_wl_.end())) {
     {
@@ -173,7 +173,7 @@ bool SchedulerClassic::NotifyProcessor(uint64_t crid) {
         cr->SetUpdateFlag();
       }
 
-      ClassicContext::Notify(cr->group_name());
+      ClassicContext::Notify(cr->group_name());// 通知到 Processor::Run 中wait的协程
       return true;
     }
   }

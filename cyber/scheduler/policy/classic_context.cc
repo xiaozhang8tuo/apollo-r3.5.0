@@ -43,9 +43,9 @@ std::shared_ptr<CRoutine> ClassicContext::NextRoutine() {
     return nullptr;
   }
 
-  for (int i = MAX_PRIO - 1; i >= 0; --i) {
+  for (int i = MAX_PRIO - 1; i >= 0; --i) { // 在自己绑定的协程组(group_name)中，从高到低去协程组的优先级队列中取任务 19是最高优先级 0 最低
     ReadLockGuard<AtomicRWLock> lk(rq_locks_[group_name_].at(i));
-    for (auto& cr : cr_group_[group_name_].at(i)) {
+    for (auto& cr : cr_group_[group_name_].at(i)) { // 从相同优先级队列中 遍历协程任务
       if (!cr->Acquire()) {
         continue;
       }
@@ -57,7 +57,7 @@ std::shared_ptr<CRoutine> ClassicContext::NextRoutine() {
       }
 
       if (unlikely(cr->state() == RoutineState::SLEEP)) {
-        if (!need_sleep_ || wake_time_ > cr->wake_time()) {
+        if (!need_sleep_ || wake_time_ > cr->wake_time()) { //取较小的时间，醒来后肯定有任务能执行
           need_sleep_ = true;
           wake_time_ = cr->wake_time();
         }
@@ -78,7 +78,7 @@ void ClassicContext::Wait() {
 
   if (unlikely(need_sleep_)) {
     auto duration = wake_time_ - std::chrono::steady_clock::now();
-    cv_wq_[group_name_].wait_for(lk, duration);
+    cv_wq_[group_name_].wait_for(lk, duration);//醒来就有任务执行，wake_time_取的是协程中的最小唤醒时间
     need_sleep_ = false;
   } else {
     cv_wq_[group_name_].wait(lk);

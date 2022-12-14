@@ -53,7 +53,7 @@ void Processor::SetAffinity(const std::vector<int> &cpus,
     }
   }
 }
-
+// 设置调度策略, 调度优先级
 void Processor::SetSchedPolicy(std::string spolicy, int sched_priority) {
   struct sched_param sp;
   int policy;
@@ -81,12 +81,12 @@ void Processor::Run() {
 
   while (likely(running_)) {
     if (likely(context_ != nullptr)) {
-      auto croutine = context_->NextRoutine();
+      auto croutine = context_->NextRoutine();//获取下一个协程
       if (croutine) {
-        croutine->Resume();
+        croutine->Resume();//执行
         croutine->Release();
       } else {
-        context_->Wait();
+        context_->Wait();//等待可执行的协程产生
       }
     } else {
       std::unique_lock<std::mutex> lk(mtx_ctx_);
@@ -109,7 +109,7 @@ void Processor::Stop() {
     thread_.join();
   }
 }
-
+//绑定上下文时，启动线程函数 ---> 找上下文取协程任务执行
 void Processor::BindContext(const std::shared_ptr<ProcessorContext> &context) {
   context_ = context;
   std::call_once(thread_flag_,
