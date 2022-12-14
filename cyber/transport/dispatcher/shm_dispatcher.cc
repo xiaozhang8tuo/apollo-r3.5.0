@@ -73,7 +73,7 @@ void ShmDispatcher::ReadMessage(uint64_t channel_id, uint32_t block_index) {
   const char* msg_info_addr =
       reinterpret_cast<char*>(rb->buf) + rb->block->msg_size();
 
-  if (msg_info.DeserializeFrom(msg_info_addr, rb->block->msg_info_size())) {
+  if (msg_info.DeserializeFrom(msg_info_addr, rb->block->msg_info_size())) { //反序列化msg_info数据
     OnMessage(channel_id, rb, msg_info);
   } else {
     AERROR << "error msg info of channel:"
@@ -89,10 +89,10 @@ void ShmDispatcher::OnMessage(uint64_t channel_id,
     return;
   }
   ListenerHandlerBasePtr* handler_base = nullptr;
-  if (msg_listeners_.Get(channel_id, &handler_base)) {
+  if (msg_listeners_.Get(channel_id, &handler_base)) {//根据channel_id，选择到关注该channel的handler
     auto handler = std::dynamic_pointer_cast<ListenerHandler<ReadableBlock>>(
         *handler_base);
-    handler->Run(rb, msg_info);
+    handler->Run(rb, msg_info);//回调到 ShmDispatcher::AddListener 中绑定的 listener_adapter
   } else {
     AERROR << "Cant find " << GlobalData::GetChannelById(channel_id)
            << "'s handler.";
@@ -118,7 +118,7 @@ void ShmDispatcher::ThreadFunc() {
 
     {
       ReadLockGuard<AtomicRWLock> lock(segments_lock_);
-      if (segments_.count(channel_id) == 0) {
+      if (segments_.count(channel_id) == 0) {//并没有关注这个话题，即使有了消息，也不用去读
         continue;
       }
       // check block index

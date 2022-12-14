@@ -46,7 +46,7 @@ class Receiver : public Endpoint {
  protected:
   void OnNewMessage(const MessagePtr& msg, const MessageInfo& msg_info);
 
-  MessageListener msg_listener_;
+  MessageListener msg_listener_; // 读节点 data::DataDispatcher<MessageT>::Instance()->Dispatch
 };
 
 template <typename M>
@@ -61,7 +61,7 @@ template <typename M>
 void Receiver<M>::OnNewMessage(const MessagePtr& msg,
                                const MessageInfo& msg_info) {
   if (msg_listener_ != nullptr) {
-    msg_listener_(msg, msg_info, attr_);
+    msg_listener_(msg, msg_info, attr_);// 回调到Receiver构造时传入的回调函数，即Transport::CreateReceiver中的回调函数
   }
 }
 

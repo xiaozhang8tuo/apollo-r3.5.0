@@ -55,7 +55,7 @@ class DataDispatcher {
 
 template <typename T>
 inline DataDispatcher<T>::DataDispatcher() {}
-//添加派发对象
+//添加派发对象，DataVisitor构造时会调用
 template <typename T>
 void DataDispatcher<T>::AddBuffer(const ChannelBuffer<T>& channel_buffer) {
   std::lock_guard<std::mutex> lock(buffers_map_mutex_);
@@ -80,7 +80,7 @@ bool DataDispatcher<T>::Dispatch(const uint64_t channel_id,
     for (auto& buffer_wptr : *buffers) {
       if (auto buffer = buffer_wptr.lock()) {
         std::lock_guard<std::mutex> lock(buffer->Mutex());
-        buffer->Fill(msg);
+        buffer->Fill(msg);//
       }
     }
   } else {

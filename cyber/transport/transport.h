@@ -120,7 +120,8 @@ auto Transport::CreateTransmitter(const RoleAttributes& attr,
   }
   return transmitter;
 }
-
+//1 当被读节点调用时(reader_base.h) ReceiverManager<MessageT>::GetReceiver调用 
+//  回调为data::DataDispatcher<MessageT>::Instance()->Dispatch 派发数据
 template <typename M>
 auto Transport::CreateReceiver(
     const RoleAttributes& attr,

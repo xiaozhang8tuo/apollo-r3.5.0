@@ -126,14 +126,14 @@ bool ShmTransmitter<M>::Transmit(const M& msg, const MessageInfo& msg_info) {
     return false;
   }
   wb.block->set_msg_info_size(MessageInfo::kSize);
-  segment_->ReleaseWrittenBlock(wb);
+  segment_->ReleaseWrittenBlock(wb);//将消息写入完毕
 
-  ReadableInfo readable_info(host_id_, wb.index, channel_id_);
+  ReadableInfo readable_info(host_id_, wb.index, channel_id_);//声明我往哪写了什么
 
   ADEBUG << "Writing sharedmem message: "
          << common::GlobalData::GetChannelById(channel_id_)
          << " to block: " << wb.index;
-  return notifier_->Notify(readable_info);
+  return notifier_->Notify(readable_info);                    //通知其他监听消息的人
 }
 
 }  // namespace transport

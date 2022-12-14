@@ -77,7 +77,7 @@ void Segment::ReleaseWrittenBlock(const WritableBlock& writable_block) {
   }
   blocks_[index].ReleaseWriteLock();
 }
-
+//指向指定idx的共享内存, 加读锁
 bool Segment::AcquireBlockToRead(ReadableBlock* readable_block) {
   RETURN_VAL_IF_NULL(readable_block, false);
 

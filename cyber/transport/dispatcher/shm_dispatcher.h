@@ -103,8 +103,8 @@ void ShmDispatcher::AddListener(const RoleAttributes& self_attr,
                                      const MessageInfo& msg_info) {
     auto msg = std::make_shared<MessageT>();
     RETURN_IF(!message::ParseFromArray(
-        rb->buf, static_cast<int>(rb->block->msg_size()), msg.get()));
-    listener(msg, msg_info);
+        rb->buf, static_cast<int>(rb->block->msg_size()), msg.get())); //在这里反序列化msg数据，msg_info的反序列化在ShmDispatcher::ReadMessage中完成
+    listener(msg, msg_info); // 回调到在ShmReceiver<M>::Enable() 中 注册的 ShmReceiver<M>::OnNewMessage 即 Receiver<M>::OnNewMessage
   };
 
   Dispatcher::AddListener<ReadableBlock>(self_attr, opposite_attr,
