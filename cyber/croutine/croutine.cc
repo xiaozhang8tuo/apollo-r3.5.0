@@ -44,7 +44,7 @@ void CRoutineEntry(void *arg) {
   CRoutine::Yield(RoutineState::FINISHED);
 }
 }
-
+// 初始状态为READY
 CRoutine::CRoutine(const std::function<void()> &func) : func_(func) {
   std::call_once(pool_init_flag, [&]() {
     auto routine_num = 100;

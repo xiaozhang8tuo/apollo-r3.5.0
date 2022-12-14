@@ -35,6 +35,7 @@ class DataVisitorBase {
  public:
   DataVisitorBase() : notifier_(new Notifier()) {}
 
+  //在生成协程时调用，回调内容为---> 通知处理单元执行该协程
   void RegisterNotifyCallback(std::function<void()>&& callback) {
     notifier_->callback = callback;
   }

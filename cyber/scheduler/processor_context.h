@@ -40,7 +40,7 @@ class ProcessorContext {
 
  protected:
   bool stop_ = false;
-  alignas(CACHELINE_SIZE) std::atomic_flag notified_ = ATOMIC_FLAG_INIT;
+  alignas(CACHELINE_SIZE) std::atomic_flag notified_ = ATOMIC_FLAG_INIT;//内存对齐至64位
 };
 
 }  // namespace scheduler

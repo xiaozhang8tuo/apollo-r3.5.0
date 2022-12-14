@@ -45,7 +45,7 @@ using RQ_LOCK_GROUP = std::unordered_map<std::string, LOCK_QUEUE>;
 
 using GRP_WQ_MUTEX = std::unordered_map<std::string, std::mutex>;
 using GRP_WQ_CV = std::unordered_map<std::string, std::condition_variable>;
-
+//全局协程队列， 但是按组划分context，同组的处理单元会发生竞争
 class ClassicContext : public ProcessorContext {
  public:
   std::shared_ptr<CRoutine> NextRoutine() override;

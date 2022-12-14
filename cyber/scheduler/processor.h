@@ -44,6 +44,7 @@ class Processor {
   void Run();
   void Stop();
   void BindContext(const std::shared_ptr<ProcessorContext>& context);
+  //设置cpu亲和性，该线程在指定的cpu上执行
   void SetAffinity(const std::vector<int>&, const std::string&, int);
   void SetSchedPolicy(std::string spolicy, int sched_priority);
 
@@ -56,7 +57,7 @@ class Processor {
   std::thread thread_;
 
   std::atomic<pid_t> tid_{-1};
-  std::atomic<bool> running_{false};
+  std::atomic<bool> running_{false};//控制线程运行的标志位用atomic
 };
 
 }  // namespace scheduler
