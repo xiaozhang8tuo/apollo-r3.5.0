@@ -174,7 +174,7 @@ inline int CRoutine::processor_id() const { return processor_id_; }
 inline void CRoutine::set_processor_id(int processor_id) {
   processor_id_ = processor_id;
 }
-
+// 有数据到来的话，设置协程为就绪态
 inline RoutineState CRoutine::UpdateState() {
   // Synchronous Event Mechanism
   if (state_ == RoutineState::SLEEP &&
@@ -203,7 +203,7 @@ inline bool CRoutine::Acquire() {
 inline void CRoutine::Release() {
   return lock_.clear(std::memory_order_release);
 }
-
+// 下次调用UpdateState时，状态将被设置为就绪态
 inline void CRoutine::SetUpdateFlag() {
   updated_.clear(std::memory_order_release);
 }

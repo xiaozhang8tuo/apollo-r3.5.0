@@ -50,6 +50,7 @@ std::shared_ptr<CRoutine> ClassicContext::NextRoutine() {
         continue;
       }
 
+      //对于DataVistor来说，有数据后，TryFetch成功才会置为就绪态，可以执行读回调
       if (cr->UpdateState() == RoutineState::READY) {
         PerfEventCache::Instance()->AddSchedEvent(SchedPerf::NEXT_RT, cr->id(),
                                                   cr->processor_id());

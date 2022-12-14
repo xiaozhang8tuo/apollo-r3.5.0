@@ -47,7 +47,7 @@ class RoutineFactory {
   std::shared_ptr<data::DataVisitorBase> data_visitor_ = nullptr;
 };
 
-template <typename M0, typename F>
+template <typename M0, typename F>//协程在 Scheduler::CreateTask 中创建
 RoutineFactory CreateRoutineFactory(
     F&& f, const std::shared_ptr<data::DataVisitor<M0>>& dv) {
   RoutineFactory factory;

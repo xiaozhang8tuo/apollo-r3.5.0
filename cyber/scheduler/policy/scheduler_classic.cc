@@ -96,7 +96,7 @@ void SchedulerClassic::CreateProcessor() {
     ClassicContext::cv_wq_[group_name];
 
     for (uint32_t i = 0; i < proc_num; i++) {
-      auto ctx = std::make_shared<ClassicContext>();//
+      auto ctx = std::make_shared<ClassicContext>();//同组的处理单元会发生竞争，处理单元只取同组的任务
       ctx->SetGroupName(group_name);
       pctxs_.emplace_back(ctx);
 
@@ -108,7 +108,7 @@ void SchedulerClassic::CreateProcessor() {
     }
   }
 }
-
+//1 任务加到调度列表中 2 协程加入到对应的上下文协程执行队列 3 通知对应的协程组
 bool SchedulerClassic::DispatchTask(const std::shared_ptr<CRoutine>& cr) {
   // we use multi-key mutex to prevent race condition 多个锁来防止数据竞争
   // when del && add cr with same crid
@@ -136,7 +136,7 @@ bool SchedulerClassic::DispatchTask(const std::shared_ptr<CRoutine>& cr) {
     cr->set_group_name(task.group_name());
   } else {
     // croutine that not exist in conf
-    cr->set_group_name(classic_conf_.groups(0).name());
+    cr->set_group_name(classic_conf_.groups(0).name()); //不在配置中的协程 分配到默认组
   }
 
   // Check if task prio is reasonable.
@@ -146,17 +146,17 @@ bool SchedulerClassic::DispatchTask(const std::shared_ptr<CRoutine>& cr) {
     cr->set_priority(MAX_PRIO - 1);
   }
 
-  // Enqueue task.
+  // Enqueue task. 添加到对应的优先级队列中，锁的是优先级队列
   {
     WriteLockGuard<AtomicRWLock> lk(
         ClassicContext::rq_locks_[cr->group_name()].at(cr->priority()));
     ClassicContext::cr_group_[cr->group_name()].at(cr->priority())
-        .emplace_back(cr);
+        .emplace_back(cr); 
   }
 
   PerfEventCache::Instance()->AddSchedEvent(SchedPerf::RT_CREATE, cr->id(),
                                             cr->processor_id());
-  ClassicContext::Notify(cr->group_name());
+  ClassicContext::Notify(cr->group_name());// 通知
   return true;
 }
 
@@ -170,7 +170,7 @@ bool SchedulerClassic::NotifyProcessor(uint64_t crid) {
     if (id_cr_.find(crid) != id_cr_.end()) {
       auto cr = id_cr_[crid];
       if (cr->state() == RoutineState::DATA_WAIT) {
-        cr->SetUpdateFlag();
+        cr->SetUpdateFlag(); //在这里将协程状态设置为就绪态，可以再次被执行
       }
 
       ClassicContext::Notify(cr->group_name());// 通知到 Processor::Run 中wait的协程
@@ -188,7 +188,7 @@ bool SchedulerClassic::RemoveTask(const std::string& name) {
   auto crid = GlobalData::GenerateHashId(name);
   return RemoveCRoutine(crid);
 }
-
+// 从调度列表中删除协程对应id，从任务队列中删除对应协程
 bool SchedulerClassic::RemoveCRoutine(uint64_t crid) {
   // we use multi-key mutex to prevent race condition
   // when del && add cr with same crid
@@ -225,7 +225,7 @@ bool SchedulerClassic::RemoveCRoutine(uint64_t crid) {
     if ((*it)->id() == crid) {
       auto cr = *it;
 
-      (*it)->Stop();
+      (*it)->Stop();//强制停止协程，state设置为FINISHED
       it = ClassicContext::cr_group_[group_name].at(prio).erase(it);
       cr->Release();
       return true;
