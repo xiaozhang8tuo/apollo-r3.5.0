@@ -159,7 +159,7 @@ bool SchedulerClassic::DispatchTask(const std::shared_ptr<CRoutine>& cr) {
   ClassicContext::Notify(cr->group_name());// 通知
   return true;
 }
-
+// 协程状态设置就绪，notify processor 取协程任务执行
 bool SchedulerClassic::NotifyProcessor(uint64_t crid) {
   if (unlikely(stop_)) {
     return true;
@@ -173,7 +173,7 @@ bool SchedulerClassic::NotifyProcessor(uint64_t crid) {
         cr->SetUpdateFlag(); //在这里将协程状态设置为就绪态，可以再次被执行
       }
 
-      ClassicContext::Notify(cr->group_name());// 通知到 Processor::Run 中wait的协程
+      ClassicContext::Notify(cr->group_name());// 通知到 Processor::Run 中wait的协程  里面是notify_one，因为NotifyProcessor传入的也只有一个tid。
       return true;
     }
   }

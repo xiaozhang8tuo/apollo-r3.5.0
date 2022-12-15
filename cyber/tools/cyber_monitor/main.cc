@@ -85,17 +85,17 @@ int main(int argc, char *argv[]) {
   FLAGS_alsologtostderr = 0;
   FLAGS_colorlogtostderr = 0;
 
-  CyberTopologyMessage topologyMsg(val);
+  CyberTopologyMessage topologyMsg(val);// val 指定channel, 传入空即所有channel
 
   auto topologyCallback =
       [&topologyMsg](const apollo::cyber::proto::ChangeMsg &change_msg) {
-        topologyMsg.TopologyChanged(change_msg);
+        topologyMsg.TopologyChanged(change_msg);// 当拓扑结构变化时，topologyMsg也要跟着变化
       };
 
   auto channelManager =
       apollo::cyber::service_discovery::TopologyManager::Instance()
           ->channel_manager();
-  channelManager->AddChangeListener(topologyCallback);
+  channelManager->AddChangeListener(topologyCallback);// 监听拓扑结构变化
 
   std::vector<apollo::cyber::proto::RoleAttributes> roleVec;
   channelManager->GetWriters(&roleVec);
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
   signal(SIGWINCH, SigResizeHandle);
   signal(SIGINT, SigCtrlCHandle);
   
-  s->SetCurrentRenderMessage(&topologyMsg);
+  s->SetCurrentRenderMessage(&topologyMsg);//最初的可渲染信息就是 Readers 和 Writers
 
   s->Init();
   s->Run();

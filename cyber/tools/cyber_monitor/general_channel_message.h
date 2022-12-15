@@ -35,10 +35,11 @@ class GeneralChannelMessage : public GeneralMessageBase {
     ChannelNameOrNodeNameIsEmpty = -5,
     NoCloseChannel = -6
   };
-
+  // castPtr2ErrorCode 和 castErrorCode2Ptr 配合使用
   static const char* errCode2Str(ErrorCode errCode);
   static bool isErrorCode(void* ptr);
-
+  // castPtr2ErrorCode 和 castErrorCode2Ptr  解决了 返回空指针，无法判断错误类型的情况
+  // 返回了非空指针后用isErrorCode判断错误码
   static ErrorCode castPtr2ErrorCode(void* ptr) {
     assert(isErrorCode(ptr));
     return static_cast<ErrorCode>(reinterpret_cast<intptr_t>(ptr));

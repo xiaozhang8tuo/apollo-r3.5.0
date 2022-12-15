@@ -86,19 +86,24 @@ Screen::~Screen() {
 }
 
 inline bool Screen::IsInit(void) const { return (stdscr != nullptr); }
-
+// 设置屏幕属性 + 置位canRun_标志位
 void Screen::Init(void) {
-  initscr();
+  initscr();// 系统函数，只能被调用一次
   if (stdscr == nullptr) return;
 
-  nodelay(stdscr, true);
+  // 一些初始化设置
+  // The nodelay() function specifies whether Delay Mode or No Delay Mode is in effect for the screen associated with the specified window.
+  // If bf is TRUE, this screen is set to No Delay Mode. If bf is FALSE, this screen is set to Delay Mode. The initial state is FALSE.
+  // The nodelay option causes getch to be a non-blocking call. If no input is ready, getch returns ERR. 
+  // If disabled (bf is FALSE), getch waits until a key is pressed.
+  nodelay(stdscr, true); //最重要的属性设置，解释了为什么可以实时刷新，getch是非阻塞的! 
   keypad(stdscr, true);
   meta(stdscr, true);
   curs_set(0);
   noecho();
 
   bkgd(COLOR_BLACK);
-
+  // 颜色设置
   start_color();
   init_pair(GREEN_BLACK, COLOR_GREEN, COLOR_BLACK);
   init_pair(YELLOW_BLACK, COLOR_YELLOW, COLOR_BLACK);
@@ -183,7 +188,7 @@ int Screen::SwitchState(int ch) {
   switch (current_state_) {
     case State::RenderInterCmdInfo:
       if (KEY_BACKSPACE == ch) {
-        current_state_ = State::RenderMessage;
+        current_state_ = State::RenderMessage;//Space -- Enable|Disable channel Message
         clear();
         ch = 27;
       }
@@ -205,7 +210,7 @@ void Screen::Run() {
   }
 
   highlight_direction_ = 0;
-
+  // 函数指针数组
   void (Screen::*showFuncs[])(int) = {&Screen::ShowRenderMessage,
                                       &Screen::ShowInteractiveCmd};
 
@@ -219,9 +224,9 @@ void Screen::Run() {
 
     ch = SwitchState(ch);
 
-    (this->*showFuncs[static_cast<int>(current_state_)])(ch);
+    (this->*showFuncs[static_cast<int>(current_state_)])(ch);//根据current_state_决定渲染函数
 
-    double fr = current_render_obj_->frame_ratio();
+    double fr = current_render_obj_->frame_ratio();//根据帧率决定休眠时间
     if(fr < MinHalfFrameRatio) fr = MinHalfFrameRatio;
     int period = static_cast<int>(1000.0 / fr);
     period >>= 1;
@@ -235,7 +240,7 @@ void Screen::Resize(void) {
     refresh();
   }
 }
-
+// 常规界面 channel and channel info
 void Screen::ShowRenderMessage(int ch) {
   erase();
   current_render_obj_->Render(this, ch);
@@ -247,6 +252,7 @@ void Screen::ShowRenderMessage(int ch) {
   refresh();
 
   switch (ch) {
+    //移动
     case 's':
     case 'S':
     case KEY_DOWN:
@@ -267,7 +273,7 @@ void Screen::ShowRenderMessage(int ch) {
         *y = 0;
       }
       break;
-
+    //返回
     case 'a':
     case 'A':
     case KEY_BACKSPACE:
@@ -280,7 +286,7 @@ void Screen::ShowRenderMessage(int ch) {
       }
       break;
     }
-
+    //确认
     case '\n':
     case '\r':
     case 'd':
@@ -298,7 +304,7 @@ void Screen::ShowRenderMessage(int ch) {
     }
   }
 }
-
+// 使用说明界面
 void Screen::ShowInteractiveCmd(int) {
   unsigned y = 0;
 

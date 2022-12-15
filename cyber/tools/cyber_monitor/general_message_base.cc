@@ -51,7 +51,7 @@ int calculateStringLines(const std::string& str, int screenWidth) {
 }
 
 }  // namespace
-
+// 统计消息的行数
 int GeneralMessageBase::lineCount(const google::protobuf::Message& msg,
                                   int screenWidth) {
   const google::protobuf::Reflection* reflection = msg.GetReflection();
@@ -72,7 +72,7 @@ int GeneralMessageBase::lineCount(const google::protobuf::Message& msg,
 
   return ret;
 }
-
+// 统计消息中某个字段的行数
 int GeneralMessageBase::lineCountOfField(
     const google::protobuf::Message& msg, int screenWidth,
     const google::protobuf::FieldDescriptor* field,
@@ -81,7 +81,7 @@ int GeneralMessageBase::lineCountOfField(
   int ret = 0;
   if (!is_folded && field->is_repeated()) {
     int size = reflection->FieldSize(msg, field);
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < size; ++i) {// repeated 类型的要依次统计子message的行数
       switch (field->cpp_type()) {
       case google::protobuf::FieldDescriptor::CPPTYPE_STRING: {
         std::string scratch;
@@ -127,7 +127,7 @@ int GeneralMessageBase::lineCountOfField(
   }
   return ret;
 }
-
+// 打印消息
 void GeneralMessageBase::PrintMessage(GeneralMessageBase* baseMsg,
                                       const google::protobuf::Message& msg,
                                       int& jumpLines, const Screen* s,
@@ -178,7 +178,7 @@ void GeneralMessageBase::PrintMessage(GeneralMessageBase* baseMsg,
     s->SetCurrentColor(c);
   }
 }
-
+//打印字段的值, 根据字段的type，有不同的输出方法。type 为 CPPTYPE_MESSAGE 时 递归调用PrintMessage
 void GeneralMessageBase::PrintField(
     GeneralMessageBase* baseMsg, const google::protobuf::Message& msg,
     int& jumpLines, const Screen* s, unsigned& lineNo, int indent,

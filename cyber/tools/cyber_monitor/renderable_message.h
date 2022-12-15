@@ -37,6 +37,7 @@ class WheelMeasurement;
 
 class Screen;
 
+//有分页的概念，也有parent 和 child 需要子类实现
 class RenderableMessage {
  public:
   static constexpr int FrameRatio_Precision = 2;
@@ -77,7 +78,7 @@ class RenderableMessage {
   void SplitPages(int key);
 
   int line_no_;
-  int pages_;
+  int pages_;//页的概念
   int page_index_;
   int page_item_count_;
   RenderableMessage* parent_;

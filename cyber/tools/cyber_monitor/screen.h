@@ -29,6 +29,7 @@ class RenderableMessage;
 
 class Screen final {
  public:
+  // 内置的帮助信息，使用说明
   static const char InteractiveCmdStr[];
 
   enum ColorPair {  // foreground color - background color
@@ -79,13 +80,13 @@ class Screen final {
 
   bool IsInit(void) const;
 
-  enum class State { RenderMessage, RenderInterCmdInfo };
+  enum class State { RenderMessage, RenderInterCmdInfo }; //?
 
-  mutable ColorPair current_color_pair_;
+  mutable ColorPair current_color_pair_;// 当前颜色
   bool canRun_;
   State current_state_;
-  int highlight_direction_;
-  RenderableMessage* current_render_obj_;
+  int highlight_direction_; //高亮方向,配合HighlightLine一起使用
+  RenderableMessage* current_render_obj_;//? 可渲染信息 当前处于那条消息下，不同的message对key有不同的反应
 };
 
 #endif  // TOOLS_CVT_MONITOR_SCREEN_H_

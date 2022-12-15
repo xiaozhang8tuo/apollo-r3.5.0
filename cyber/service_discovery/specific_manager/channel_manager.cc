@@ -262,7 +262,7 @@ void ChannelManager::DisposeJoin(const ChangeMsg& msg) {
     if (msg.role_attr().has_proto_desc() &&
         msg.role_attr().proto_desc() != "") {
       message::ProtobufFactory::Instance()->RegisterMessage(
-          msg.role_attr().proto_desc());
+          msg.role_attr().proto_desc());//注册该消息，可以应用反射构建
     }
     auto role = std::make_shared<RoleWriter>(msg.role_attr(), msg.timestamp());
     node_writers_.Add(role->attributes().node_id(), role);

@@ -39,7 +39,7 @@ void GeneralMessage::Render(const Screen* s, int key) {
     unsigned lineNo = 0;
 
     RenderableMessage* p = this;
-    while (p->parent()->parent()->parent()) {
+    while (p->parent()->parent()->parent()) { //? 为了获取到正确的 channelMsgPtr ?
       p = p->parent();
     }
 
@@ -60,7 +60,7 @@ void GeneralMessage::Render(const Screen* s, int key) {
 
     auto channelMsg = channelMsgPtr->CopyMsgPtr();
     if (!channelMsgPtr->raw_msg_class_->ParseFromString(channelMsg->message)) {
-      s->AddStr(0, lineNo++, "Cannot Parse the message for Real-Time Updating");
+      s->AddStr(0, lineNo++, "Cannot Parse the message for Real-Time Updating");//因为实时更新无法打印proto?
       return;
     }
 
@@ -109,7 +109,7 @@ void GeneralMessage::Render(const Screen* s, int key) {
       pages_ = lcount / page_item_count_ + 1;
       SplitPages(key);
       int jumpLines = page_index_ * page_item_count_;
-      if (is_folded_) {
+      if (is_folded_) { //折叠打印 or 非折叠
         GeneralMessageBase::PrintField(this, *message_ptr_, jumpLines, 
                           s, lineNo, 0, reflection_ptr_, field_, itemIndex_);
       } else {

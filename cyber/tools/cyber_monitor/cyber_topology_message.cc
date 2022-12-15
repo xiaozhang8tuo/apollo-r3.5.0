@@ -43,7 +43,7 @@ CyberTopologyMessage::~CyberTopologyMessage(void) {
     }
   }
 }
-
+// 是不是monitor本身的话题
 bool CyberTopologyMessage::isFromHere(const std::string& nodeName) {
   std::ostringstream outStr;
   outStr << "MonitorReader" << pid_;
@@ -89,7 +89,7 @@ std::map<std::string, GeneralChannelMessage*>::const_iterator CyberTopologyMessa
   }
   return ret;
 }
-
+// 根据changeMsg修改reader和writer
 void CyberTopologyMessage::TopologyChanged(
     const apollo::cyber::proto::ChangeMsg& changeMsg) {
   if (::apollo::cyber::proto::OperateType::OPT_JOIN ==
@@ -114,7 +114,7 @@ void CyberTopologyMessage::TopologyChanged(
     }
   }
 }
-
+// 根据变化信息找到对应的channel, 修改channelMsg中的writer和reader
 void CyberTopologyMessage::AddReaderWriter(
     const apollo::cyber::proto::RoleAttributes& role, bool isWriter) {
   const std::string& channelName = role.channel_name();

@@ -77,14 +77,14 @@ bool GeneralChannelMessage::isErrorCode(void* ptr) {
   }
   return false;
 }
-
+// 解决了怎么计算实时帧率
 double GeneralChannelMessage::frame_ratio(void) {
   if (!is_enabled() || !has_message_come()) return 0.0;
   auto time_now = apollo::cyber::Time::MonoTime();
   auto interval = time_now - time_last_calc_;
-  if (interval.ToNanosecond() > 1000000000) {
+  if (interval.ToNanosecond() > 1000000000) {//每秒更新一次
     int old = frame_counter_;
-    while (!frame_counter_.compare_exchange_strong(old, 0)) {
+    while (!frame_counter_.compare_exchange_strong(old, 0)) { //CAS 拿到 frame_counter_后置0
     }
     if (old == 0) {
       return 0.0;
@@ -97,7 +97,7 @@ double GeneralChannelMessage::frame_ratio(void) {
   }
   return frame_ratio_;
 }
-
+// GeneralChannelMessage在整个拓扑结构中也是一个读节点, 读对应的channel, 消息来临时updateRawMessage(rawMsg);
 GeneralChannelMessage* GeneralChannelMessage::OpenChannel(
     const std::string& channelName) {
   if (channelName.empty() || node_name_.empty()) {
@@ -219,7 +219,7 @@ void GeneralChannelMessage::RenderDebugString(const Screen* s, int key,
   if (has_message_come()) {
     if (raw_msg_class_ == nullptr) {
       auto rawFactory = apollo::cyber::message::ProtobufFactory::Instance();
-      raw_msg_class_ = rawFactory->GenerateMessageByType(message_type());
+      raw_msg_class_ = rawFactory->GenerateMessageByType(message_type());//根据message的类型生成一个message
     }
 
     if (raw_msg_class_ == nullptr) {
@@ -230,25 +230,25 @@ void GeneralChannelMessage::RenderDebugString(const Screen* s, int key,
       std::ostringstream outStr;
       outStr << std::fixed << std::setprecision(FrameRatio_Precision)
              << frame_ratio();
-      s->AddStr(outStr.str().c_str());
+      s->AddStr(outStr.str().c_str()); // 在某行后追加str
 
-      decltype(channel_message_) channelMsg = CopyMsgPtr();
+      decltype(channel_message_) channelMsg = CopyMsgPtr();// 取到updateRawMessage后的更新的RawMessage(就是带时间戳的字符串)
 
       if (channelMsg->message.size()) {
         s->AddStr(0, lineNo++, "RawMessage Size: ");
         outStr.str("");
         outStr << channelMsg->message.size() << " Bytes";
         s->AddStr(outStr.str().c_str());
-        if (raw_msg_class_->ParseFromString(channelMsg->message)) {
-          int lcount = lineCount(*raw_msg_class_, s->Width());
+        if (raw_msg_class_->ParseFromString(channelMsg->message)) {//传输过来的是统一的RawMessage,根据channel_type反射生成对应结构, 在此处反序列化
+          int lcount = lineCount(*raw_msg_class_, s->Width()); // 统计要多少行
           page_item_count_ = s->Height() - lineNo;
           pages_ = lcount / page_item_count_ + 1;
-          SplitPages(key);
+          SplitPages(key);//分页
           int jumpLines = page_index_ * page_item_count_;
           jumpLines <<= 2;
           jumpLines /= 5;
           GeneralMessageBase::PrintMessage(this, *raw_msg_class_, jumpLines, s,
-                                           lineNo, 0);
+                                           lineNo, 0); //打印(写屏幕)
         } else {
           s->AddStr(0, lineNo++, "Cannot parse the raw message");
         }
