@@ -127,13 +127,15 @@ void IntraDispatcher::OnMessage(uint64_t channel_id,
 }
 ```
 
+# ShmDispatcher
 
+**单例类**
 
 # ListenerHandlerBase/ListenerHandler
 
 
 
-![Inheritance graph](assets/classapollo_1_1cyber_1_1transport_1_1ListenerHandlerBase__inherit__graph.png)
+![Inheritance graph](.assets/classapollo_1_1cyber_1_1transport_1_1ListenerHandlerBase__inherit__graph.png)
 
 ListenerHandler要实现Disconnect 方法
 

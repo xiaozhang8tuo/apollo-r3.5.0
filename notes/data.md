@@ -26,7 +26,12 @@ ChannelBuffer<M0> buffer_;//visitor 就是一个ChannelBuffer
 DataVisitor(uint64_t channel_id, uint32_t queue_size)
     : buffer_(channel_id, new BufferType<M0>(queue_size)) {
   DataDispatcher<M0>::Instance()->AddBuffer(buffer_);
-  data_notifier_->AddNotifier(buffer_.channel_id(), notifier_);//channel_id 和 notifier_绑定
+  data_notifier_->AddNotifier(buffer_.channel_id(), notifier_);
+  //channel_id 和 notifier_绑定 
+  //当该channle_id有数据时，即DataDispatcher<T>::Dispatch 分派数据时
+  //会执行 notifier_->Notify(channel_id), 执行notifies 对应的所有回调
+  //对于读节点来说:该回调在Scheduler::CreateTask中创建 即 this->NotifyProcessor(task_id)
+  //通知调度器执行对应的协程任务，任务内容为TryFetch: 取CacheBuffer中的数据,执行读节点的read_func
 }
 ```
 
@@ -64,9 +69,7 @@ DataDispatcher<M0>::Instance()
 
 # ChannelBuffer #
 
-内含一个`CacheBuffer`, 和`channel_id`，有`Fetch `, `Latest` ,`FetchMulti`等方法
-
-
+内含一个`CacheBuffer`，有`Fetch `, `Latest` ,`FetchMulti`等方法。就是**带channel_id的CacheBuffer**
 
 # CacheBuffer #
 

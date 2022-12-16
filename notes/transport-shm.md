@@ -1,7 +1,3 @@
-
-
-
-
 # ConditionNotifier/ReadableInfo
 
 ![Collaboration graph](./.assets/classapollo_1_1cyber_1_1transport_1_1ConditionNotifier__coll__graph.png)
@@ -32,7 +28,8 @@ Shutdown()  shutdown标志位
   
   pthread_condattr_t cond_attr;
   pthread_condattr_init(&cond_attr);
-  pthread_condattr_setpshared(&cond_attr, PTHREAD_PROCESS_SHARED);
+  pthread_condattr_setpshared(&cond_attr, PTHREAD_PROCESS_SHARED); 
+  //如果 pshared 属性在共享内存中设置为 PTHREAD_PROCESS_SHARED，则其所创建的条件变量可以在多个进程中的线程之间共享。
   pthread_cond_init(indicator_->cv.native_handle(), &cond_attr);
   ```
 
@@ -48,7 +45,7 @@ Shutdown()  shutdown标志位
 
 # Segment
 
-![Collaboration graph](assets/classapollo_1_1cyber_1_1transport_1_1Segment__coll__graph.png)
+![Collaboration graph](.assets/classapollo_1_1cyber_1_1transport_1_1Segment__coll__graph.png)
 
 ## 成员变量
 

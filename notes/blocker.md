@@ -1,6 +1,6 @@
 # Blocker
 
-![Inheritance graph](assets/classapollo_1_1cyber_1_1blocker_1_1Blocker__inherit__graph.png)
+![Inheritance graph](.assets/classapollo_1_1cyber_1_1blocker_1_1Blocker__inherit__graph.png)
 
 ## 成员变量
 
@@ -78,7 +78,7 @@ bool Blocker<T>::Subscribe(const std::string& callback_id,
 
 # BlockerManager
 
-![Collaboration graph](assets/classapollo_1_1cyber_1_1blocker_1_1BlockerManager__coll__graph.png)
+![Collaboration graph](.assets/classapollo_1_1cyber_1_1blocker_1_1BlockerManager__coll__graph.png)
 
 ## Subscribe
 

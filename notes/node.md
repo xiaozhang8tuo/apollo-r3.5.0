@@ -1,6 +1,6 @@
 # Node
 
-![Collaboration graph](assets/classapollo_1_1cyber_1_1Node__coll__graph.png)
+![Collaboration graph](.assets/classapollo_1_1cyber_1_1Node__coll__graph.png)
 
 ## 成员变量
 
@@ -148,7 +148,7 @@ auto NodeChannelImpl::CreateWriter(const proto::RoleAttributes& role_attr)
 
 # Writer/WriterBase
 
-![Inheritance graph](assets/classapollo_1_1cyber_1_1WriterBase__inherit__graph.png)
+![Inheritance graph](.assets/classapollo_1_1cyber_1_1WriterBase__inherit__graph.png)
 
 ## WriterBase
 
@@ -289,7 +289,7 @@ void Writer<MessageT>::OnChannelChange(const proto::ChangeMsg& change_msg) {
 
 # Reader/ReaderBase
 
-![Inheritance graph](assets/classapollo_1_1cyber_1_1ReaderBase__inherit__graph.png)
+![Inheritance graph](.assets/classapollo_1_1cyber_1_1ReaderBase__inherit__graph.png)
 
 ## ReaderBase
 
