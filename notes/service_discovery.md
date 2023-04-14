@@ -2,7 +2,7 @@
 
 **单例类**
 
-![Collaboration graph](assets/classapollo_1_1cyber_1_1service__discovery_1_1TopologyManager__coll__graph.png)
+![Collaboration graph](.assets/classapollo_1_1cyber_1_1service__discovery_1_1TopologyManager__coll__graph.png)
 
 ## Init
 
@@ -90,7 +90,7 @@ void TopologyManager::OnParticipantChange(const PartInfo& info) {
 
 # Manager
 
-![Inheritance graph](assets/classapollo_1_1cyber_1_1service__discovery_1_1Manager__inherit__graph.png)
+![Inheritance graph](.assets/classapollo_1_1cyber_1_1service__discovery_1_1Manager__inherit__graph.png)
 
 Manager 需要子类去实现 **Dispose**等方法。使用基于rtps的发布订阅，实现全网络的node，channel，service的变化互联
 

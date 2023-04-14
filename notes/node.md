@@ -35,7 +35,7 @@ Node::Node(const std::string& node_name, const std::string& name_space)
 
 ## 成员变量
 
-![Collaboration graph](assets/classapollo_1_1cyber_1_1NodeChannelImpl__coll__graph.png)
+![Collaboration graph](.assets/classapollo_1_1cyber_1_1NodeChannelImpl__coll__graph.png)
 
 ```cpp
 bool is_reality_mode_;
